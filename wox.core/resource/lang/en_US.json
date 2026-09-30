@@ -1333,6 +1333,8 @@
   "plugin_glance_time_description": "Current local time",
   "plugin_glance_date_name": "Date",
   "plugin_glance_date_description": "Current local date",
+  "plugin_glance_datetime_name": "Date & time",
+  "plugin_glance_datetime_description": "Current local date and time",
   "plugin_glance_battery_name": "Battery",
   "plugin_glance_battery_description": "Current battery level",
   "plugin_glance_cpu_name": "CPU",

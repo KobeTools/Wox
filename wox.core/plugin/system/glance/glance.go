@@ -49,6 +49,8 @@ func (p *GlancePlugin) GetMetadata() plugin.Metadata {
 	glances := []plugin.MetadataGlance{
 		{Id: "time", Name: "i18n:plugin_glance_time_name", Description: "i18n:plugin_glance_time_description", Icon: glanceSvgString(glanceTimeSvg), RefreshIntervalMs: 60000},
 		{Id: "date", Name: "i18n:plugin_glance_date_name", Description: "i18n:plugin_glance_date_description", Icon: glanceSvgString(glanceDateSvg), RefreshIntervalMs: 60000},
+		// KobeTools fork: only one glance shows at a time, so offer date and time together.
+		{Id: "datetime", Name: "i18n:plugin_glance_datetime_name", Description: "i18n:plugin_glance_datetime_description", Icon: glanceSvgString(glanceTimeSvg), RefreshIntervalMs: 60000},
 		{Id: "battery", Name: "i18n:plugin_glance_battery_name", Description: "i18n:plugin_glance_battery_description", Icon: glanceSvgString(glanceBatterySvg), RefreshIntervalMs: 60000},
 		// New feature: CPU and memory are live system metrics, so they use a
 		// shorter 3-second interval instead of the slower static-info cadence.
@@ -95,6 +97,8 @@ func (p *GlancePlugin) Glance(ctx context.Context, request plugin.GlanceRequest)
 			items = append(items, plugin.GlanceItem{Id: id, Text: time.Now().Format("15:04"), Icon: common.NewWoxImageSvg(glanceTimeSvg)})
 		case "date":
 			items = append(items, plugin.GlanceItem{Id: id, Text: time.Now().Format("Mon 01/02"), Icon: common.NewWoxImageSvg(glanceDateSvg)})
+		case "datetime":
+			items = append(items, plugin.GlanceItem{Id: id, Text: time.Now().Format("Mon Jan 2 15:04"), Icon: common.NewWoxImageSvg(glanceTimeSvg)})
 		case "battery":
 			if item, ok := p.batteryGlance(ctx); ok {
 				items = append(items, item)
