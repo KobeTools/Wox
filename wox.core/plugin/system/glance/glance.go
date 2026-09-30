@@ -98,7 +98,7 @@ func (p *GlancePlugin) Glance(ctx context.Context, request plugin.GlanceRequest)
 		case "date":
 			items = append(items, plugin.GlanceItem{Id: id, Text: time.Now().Format("Mon 01/02"), Icon: common.NewWoxImageSvg(glanceDateSvg)})
 		case "datetime":
-			items = append(items, plugin.GlanceItem{Id: id, Text: time.Now().Format("Mon Jan 2 15:04"), Icon: common.NewWoxImageSvg(glanceTimeSvg)})
+			items = append(items, plugin.GlanceItem{Id: id, Text: time.Now().Format("Mon, Jan 2 · 15:04"), Icon: common.NewWoxImageSvg(glanceTimeSvg)})
 		case "battery":
 			if item, ok := p.batteryGlance(ctx); ok {
 				items = append(items, item)
