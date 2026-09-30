@@ -76,7 +76,7 @@ func (c *ThemePlugin) Query(ctx context.Context, query plugin.Query) plugin.Quer
 
 	uiManager := plugin.GetPluginManager().GetUI()
 	installedThemes := uiManager.GetAllThemes(ctx)
-	storeManifests := ui.GetStoreManager().GetThemeManifests()
+	storeManifests := ui.GetStoreManager().BrowseThemeManifests(ctx)
 	iconCatalog := append([]common.Theme{}, installedThemes...)
 	changeThemeText := i18n.GetI18nManager().TranslateWox(ctx, "plugin_theme_change_theme")
 	uninstallThemeText := i18n.GetI18nManager().TranslateWox(ctx, "plugin_theme_uninstall_theme")

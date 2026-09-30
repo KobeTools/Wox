@@ -32,6 +32,25 @@ var storeOnce sync.Once
 type Store struct {
 	mu        sync.RWMutex
 	manifests []common.StoreThemeManifest
+
+	// KobeTools fork: see BrowseThemeManifests.
+	onDemandMu      sync.Mutex
+	onDemandFetched time.Time
+}
+
+// BrowseThemeManifests returns the store catalog for browsing. With store
+// polling off, it fetches the first time it's needed; failed fetches retry at
+// most every 10 minutes.
+func (s *Store) BrowseThemeManifests(ctx context.Context) []common.StoreThemeManifest {
+	if util.ForkDisableStores && len(s.GetThemeManifests()) == 0 {
+		s.onDemandMu.Lock()
+		if len(s.GetThemeManifests()) == 0 && time.Since(s.onDemandFetched) >= 10*time.Minute {
+			s.onDemandFetched = time.Now()
+			s.RefreshThemeManifests(ctx)
+		}
+		s.onDemandMu.Unlock()
+	}
+	return s.GetThemeManifests()
 }
 
 func GetStoreManager() *Store {

@@ -33,7 +33,7 @@ func (s *CoreServices) Themes(ctx context.Context, sessionID string, catalog con
 	var themes []common.Theme
 	switch catalog {
 	case contract.ThemeCatalogStore:
-		manifests := GetStoreManager().GetThemeManifests()
+		manifests := GetStoreManager().BrowseThemeManifests(ctx)
 		result := make([]contract.ThemeCatalogItem, 0, len(manifests))
 		for _, manifest := range manifests {
 			result = append(result, contract.ThemeCatalogItem{

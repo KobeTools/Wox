@@ -147,6 +147,25 @@ type Store struct {
 	// interleave their file-system and plugin-manager mutations, which previously
 	// caused loading-indicator flicker and potential data corruption.
 	installMu sync.Mutex
+
+	// KobeTools fork: when store polling is off, the list is fetched the first
+	// time it's browsed; failed fetches retry at most every 10 minutes.
+	onDemandMu      sync.Mutex
+	onDemandFetched time.Time
+}
+
+// ensureManifestsOnDemand fills the store list for browsing without background polling.
+func (s *Store) ensureManifestsOnDemand(ctx context.Context) {
+	if !util.ForkDisableStores || len(s.pluginManifests) > 0 {
+		return
+	}
+	s.onDemandMu.Lock()
+	defer s.onDemandMu.Unlock()
+	if len(s.pluginManifests) > 0 || time.Since(s.onDemandFetched) < 10*time.Minute {
+		return
+	}
+	s.onDemandFetched = time.Now()
+	s.setPluginManifests(ctx, s.GetStorePluginManifests(ctx))
 }
 
 func GetStoreManager() *Store {
@@ -371,6 +390,7 @@ func reloadSettingPlugins(ctx context.Context) {
 }
 
 func (s *Store) Search(ctx context.Context, keyword string) []StorePluginManifest {
+	s.ensureManifestsOnDemand(ctx)
 	return lo.Filter(s.pluginManifests, func(manifest StorePluginManifest, _ int) bool {
 		if !IsAnySupportedInCurrentOS(manifest.SupportedOS) {
 			return false
