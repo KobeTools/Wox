@@ -12,7 +12,7 @@ calls. Re-check every item below after each upstream sync.
 | No update checks, downloads or installs (upstream verifies binaries with MD5 from an unsigned manifest) | `updater/updater.go` (`ForkDisableUpdates` in `StartAutoUpdateChecker`, `getLatestVersion`, `downloadUpdate`, `ApplyUpdate`) |
 | No telemetry ping (was on by default, to `wox-telemetry.qlf.workers.dev`) | `telemetry/sender.go` |
 | No plugin / theme / AI-command store polling (was every 10 minutes). Lists are fetched when you browse them (Settings, `wpm`/`theme` queries). Installing store plugins still runs unverified third-party code, so review first | `plugin/store.go`, `ui/store.go`, `ai/store.go`, `ui/settings_theme_services.go`, `plugin/system/theme.go` |
-| Website icons from local cache only (copied links and bookmarks were sent to `google.com/s2/favicons`) | `util/websiteicon/website_icon.go` |
+| Website icons are fetched normally, except for the user's **private domains**, which are never sent to Google or fetched (cache only). List them per machine in `%USERPROFILE%\.wox\wox-user\settings\private-domains.txt` (one per line; `lyft` matches any host with that label, `corp.example.com` matches that domain and subdomains) or `WOX_PRIVATE_DOMAINS`. `ForkDisableRemoteFavicons` turns all remote icons off | `util/fork.go` (`IsPrivateFaviconHost`), `util/websiteicon/website_icon.go` |
 | No public-DNS retry (1.1.1.1 / 8.8.8.8) that bypassed local DNS blocking | `util/http.go` |
 | Currency rates fetched on first currency query, not at startup + hourly | `plugin/system/converter/converter.go` |
 | Defaults: auto-update off, usage stats off, AI `bash` tool disabled | `setting/wox_setting.go` |

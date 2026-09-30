@@ -35,8 +35,8 @@ func Fetch(ctx context.Context, websiteUrl string) (common.WoxImage, error) {
 		}, nil
 	}
 
-	if util.ForkDisableRemoteFavicons {
-		return icons.Get(icons.PluginWebsearch), fmt.Errorf("remote favicons are disabled in this build: %s", websiteUrl)
+	if util.ForkDisableRemoteFavicons || util.IsPrivateFaviconHost(parseUrl.Hostname()) {
+		return icons.Get(icons.PluginWebsearch), fmt.Errorf("remote favicon skipped (disabled or private domain): %s", parseUrl.Hostname())
 	}
 
 	// 1) Try Google favicon service first (usually returns PNG)
