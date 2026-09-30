@@ -442,7 +442,7 @@ func NewWoxSetting(store *WoxSettingStore) *WoxSetting {
 	}
 
 	return &WoxSetting{
-		MainHotkey:                NewPlatformValue(store, "MainHotkey", "alt+space", "cmd+space", "ctrl+space"),
+		MainHotkey:                NewPlatformValue(store, "MainHotkey", "ctrl+space", "cmd+space", "ctrl+space"), // KobeTools fork: Windows ctrl+space (Caps+Space via kanata); alt+space stays free for dictation
 		SelectionHotkey:           NewPlatformValue(store, "SelectionHotkey", "win+alt+space", "command+option+space", "ctrl+shift+j"),
 		ActionPanelHotkey:         NewPlatformValue(store, "ActionPanelHotkey", DefaultActionPanelHotkeyWindows, DefaultActionPanelHotkeyMac, DefaultActionPanelHotkeyLinux),
 		IgnoreHotkeysOnFullscreen: NewPlatformValue(store, "IgnoreHotkeysOnFullscreen", false, false, false),

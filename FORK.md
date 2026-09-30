@@ -16,7 +16,7 @@ calls. Re-check every item below after each upstream sync.
 | No public-DNS retry (1.1.1.1 / 8.8.8.8) that bypassed local DNS blocking | `util/http.go` |
 | Currency rates fetched on first currency query, not at startup + hourly | `plugin/system/converter/converter.go` |
 | Typing a URL ranks "Open in browser" first (upstream scored it 100, below bookmarks whose URLs merely contain the text) | `plugin/system/url.go` |
-| Defaults: auto-update off, usage stats off, AI `bash` tool disabled | `setting/wox_setting.go` |
+| Defaults: auto-update off, usage stats off, AI `bash` tool disabled, Windows main hotkey `ctrl+space` (upstream `alt+space`; Caps+Space via kanata, and Alt+Space stays free for dictation) | `setting/wox_setting.go` |
 | Plugin hosts listen on 127.0.0.1 only and reject browser connections (upstream: all interfaces, no auth) | `wox.plugin.host.python/src/wox_plugin_host/host.py`, `wox.plugin.host.nodejs/src/index.ts` |
 | Python host zipapp built from `uv.lock` with `--require-hashes` (upstream: shiv ran pip against PyPI, unpinned); `ruff format` no longer part of the build | `wox.plugin.host.python/Makefile` |
 | Pinned-toolchain build script | `scripts/build-install-local.sh`, `scripts/toolchain.env` |
