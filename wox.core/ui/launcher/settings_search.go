@@ -35,6 +35,8 @@ type settingsSearchResult struct {
 	pluginID    string
 	searchTexts []string
 	score       int64
+	// KobeTools fork: dropdown option labels, so "Date & time" finds Primary glance.
+	choiceLabels []string
 }
 
 var builtInSettingSearchAliases = map[string][]string{
@@ -99,8 +101,16 @@ func (a *App) settingsSearchResults(snapshot settingsSnapshot) []settingsSearchR
 			item = a.localizedSettingItem(item)
 			texts := []string{item.key, item.title, tabLabel}
 			texts = append(texts, builtInSettingSearchAliases[item.key]...)
+			choiceLabels := make([]string, 0, len(item.choices))
+			for _, choice := range item.choices {
+				if label := strings.TrimSpace(choice.label); label != "" {
+					choiceLabels = append(choiceLabels, label)
+				}
+			}
+			texts = append(texts, choiceLabels...)
 			candidates = append(candidates, settingsSearchResult{
 				kind: settingsSearchSetting, title: item.title, subtitle: tabLabel, tab: tab.id, settingKey: item.key, searchTexts: normalizeSettingsSearchTexts(texts),
+				choiceLabels: choiceLabels,
 			})
 		}
 	}
@@ -142,6 +152,10 @@ func (a *App) settingsSearchResults(snapshot settingsSnapshot) []settingsSearchR
 	for _, candidate := range candidates {
 		candidate.score = bestSettingsSearchScore(candidate.searchTexts, query, snapshot.general.Data.UsePinYin)
 		if candidate.score > 0 {
+			// Say which option matched when the setting's own name didn't.
+			if label := matchedSettingsSearchChoice(candidate, query, snapshot.general.Data.UsePinYin); label != "" {
+				candidate.subtitle = candidate.subtitle + " · " + label
+			}
 			results = append(results, candidate)
 		}
 	}
@@ -158,6 +172,24 @@ func (a *App) settingsSearchResults(snapshot settingsSnapshot) []settingsSearchR
 		results = results[:8]
 	}
 	return results
+}
+
+// matchedSettingsSearchChoice returns the best-matching option label when the
+// query matches one of a setting's options but not its title (KobeTools fork).
+func matchedSettingsSearchChoice(candidate settingsSearchResult, query string, usePinYin bool) string {
+	if len(candidate.choiceLabels) == 0 {
+		return ""
+	}
+	if bestSettingsSearchScore(normalizeSettingsSearchTexts([]string{candidate.title}), query, usePinYin) > 0 {
+		return ""
+	}
+	best, bestScore := "", int64(0)
+	for _, label := range candidate.choiceLabels {
+		if score := bestSettingsSearchScore(normalizeSettingsSearchTexts([]string{label}), query, usePinYin); score > bestScore {
+			best, bestScore = label, score
+		}
+	}
+	return best
 }
 
 // settingsSearchTabLabel uses the same localized navigation label shown by the destination page.
