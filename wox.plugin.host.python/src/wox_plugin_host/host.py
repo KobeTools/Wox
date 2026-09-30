@@ -126,5 +126,8 @@ async def handler(websocket: ServerConnection) -> None:
 async def start_websocket(websocket_port: int) -> None:
     """Start WebSocket server"""
     await logger.info(str(uuid.uuid4()), "start websocket server")
-    async with websockets.serve(handler, "", websocket_port):
+    # KobeTools fork: loopback only, and reject browser connections (they always
+    # send Origin; Wox's own client doesn't), so no other machine or web page
+    # can drive the plugin host.
+    async with websockets.serve(handler, "127.0.0.1", websocket_port, origins=[None]):
         await asyncio.Future()  # run forever

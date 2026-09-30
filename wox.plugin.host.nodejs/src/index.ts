@@ -40,7 +40,14 @@ setInterval(() => {
   }
 }, 1000)
 
-const wss = new WebSocketServer({ port: Number.parseInt(port) })
+// KobeTools fork: loopback only, and reject browser connections (they always
+// send Origin; Wox's own client doesn't), so no other machine or web page can
+// drive the plugin host.
+const wss = new WebSocketServer({
+  host: "127.0.0.1",
+  port: Number.parseInt(port),
+  verifyClient: (info: { origin?: string }) => !info.origin
+})
 wss.on("connection", function connection(ws) {
   setCurrentConnection(ws)
   logger.updateWebSocket(ws)
