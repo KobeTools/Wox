@@ -15,6 +15,7 @@ calls. Re-check every item below after each upstream sync.
 | Website icons are fetched normally, except for the user's **private domains**, which are never sent to Google or fetched (cache only). List them per machine in `%USERPROFILE%\.wox\wox-user\settings\private-domains.txt` (one per line; `lyft` matches any host with that label, `corp.example.com` matches that domain and subdomains, `!lyft.com` is an exception for the public site and its `www.`; no file means nothing is private) or `WOX_PRIVATE_DOMAINS`. `ForkDisableRemoteFavicons` turns all remote icons off | `util/fork.go` (`IsPrivateFaviconHost`), `util/websiteicon/website_icon.go` |
 | No public-DNS retry (1.1.1.1 / 8.8.8.8) that bypassed local DNS blocking | `util/http.go` |
 | Currency rates fetched on first currency query, not at startup + hourly | `plugin/system/converter/converter.go` |
+| Typing a URL ranks "Open in browser" first (upstream scored it 100, below bookmarks whose URLs merely contain the text) | `plugin/system/url.go` |
 | Defaults: auto-update off, usage stats off, AI `bash` tool disabled | `setting/wox_setting.go` |
 | Plugin hosts listen on 127.0.0.1 only and reject browser connections (upstream: all interfaces, no auth) | `wox.plugin.host.python/src/wox_plugin_host/host.py`, `wox.plugin.host.nodejs/src/index.ts` |
 | Python host zipapp built from `uv.lock` with `--require-hashes` (upstream: shiv ran pip against PyPI, unpinned); `ruff format` no longer part of the build | `wox.plugin.host.python/Makefile` |

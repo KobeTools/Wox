@@ -154,8 +154,10 @@ func (r *UrlPlugin) Query(ctx context.Context, query plugin.Query) plugin.QueryR
 		results = append(results, plugin.QueryResult{
 			Title:    query.Search,
 			SubTitle: "i18n:plugin_url_open_in_browser",
-			Score:    100,
-			Icon:     urlIcon,
+			// KobeTools fork: typing a URL means "open it"; rank that above bookmarks
+			// and history whose URLs merely contain the text (upstream: 100).
+			Score: 100000,
+			Icon:  urlIcon,
 			Actions: []plugin.QueryResultAction{
 				{
 					Name:        "i18n:plugin_url_open",
