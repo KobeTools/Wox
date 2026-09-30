@@ -19,6 +19,7 @@ calls. Re-check every item below after each upstream sync.
 | Plugin hosts listen on 127.0.0.1 only and reject browser connections (upstream: all interfaces, no auth) | `wox.plugin.host.python/src/wox_plugin_host/host.py`, `wox.plugin.host.nodejs/src/index.ts` |
 | Python host zipapp built from `uv.lock` with `--require-hashes` (upstream: shiv ran pip against PyPI, unpinned); `ruff format` no longer part of the build | `wox.plugin.host.python/Makefile` |
 | Pinned-toolchain build script | `scripts/build-install-local.sh`, `scripts/toolchain.env` |
+| macOS builds sign with the local "KobeTools Dev" identity when present (upstream's fallback pins the requirement to the bundle identifier only), no hardened runtime, no notarization | `Makefile` (`_bundle_mac_app`) |
 
 ## Known gaps (accepted, review on sync)
 

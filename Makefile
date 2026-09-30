@@ -485,6 +485,10 @@ _bundle_mac_app:
 	# survive code changes without requiring an interactive signing certificate.
 	@if [ -n "$(MACOS_SIGN_IDENTITY)" ]; then \
 		codesign --options=runtime --force --deep --sign "$(MACOS_SIGN_IDENTITY)" Wox.app; \
+	elif security find-identity -v -p codesigning 2>/dev/null | grep -q '"KobeTools Dev"'; then \
+		/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.github.wox.dev" Wox.app/Contents/Info.plist; \
+		codesign --force --deep --sign "KobeTools Dev" Wox.app; \
+		echo "Signed with the local KobeTools Dev identity (fork: grants tied to its certificate, not just the identifier)"; \
 	else \
 		/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.github.wox.dev" Wox.app/Contents/Info.plist; \
 		codesign --force --deep --sign - Wox.app; \
