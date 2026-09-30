@@ -486,7 +486,7 @@ func NewWoxSetting(store *WoxSettingStore) *WoxSetting {
 		CloudSyncServerUrl:                 NewLocalWoxSettingValue(store, "CloudSyncServerUrl", ""),
 		CloudSyncDisabledPlugins:           NewWoxSettingValue(store, "CloudSyncDisabledPlugins", []string{}),
 		EnableAutoBackup:                   NewWoxSettingValue(store, "EnableAutoBackup", true),
-		EnableAutoUpdate:                   NewWoxSettingValue(store, "EnableAutoUpdate", true),
+		EnableAutoUpdate:                   NewWoxSettingValue(store, "EnableAutoUpdate", false),
 		ReleaseChannel:                     NewWoxSettingValueWithValidator(store, "ReleaseChannel", ReleaseChannelStable, IsValidReleaseChannel),
 		LastWindowPosition:                 NewLocalWoxSettingValue(store, "LastWindowPosition", SavedWindowPosition{}),
 		LastWindowX:                        NewLocalWoxSettingValue(store, "LastWindowX", -1),
@@ -498,12 +498,12 @@ func NewWoxSetting(store *WoxSettingStore) *WoxSetting {
 		AIProviders:                        NewWoxSettingValue(store, "AIProviders", []AIProvider{}),
 		AIMCPServers:                       NewWoxSettingValue(store, "AIMCPServers", []common.AIChatMCPServerConfig{}),
 		AISkills:                           NewWoxSettingValue(store, "AISkills", []common.Skill{}),
-		AIDisabledBuiltinTools:             NewWoxSettingValue(store, "AIDisabledBuiltinTools", []string{}),
+		AIDisabledBuiltinTools:             NewWoxSettingValue(store, "AIDisabledBuiltinTools", []string{"bash"}), // KobeTools fork: the model can't run shell commands unless you turn bash back on
 		QueryHistories:                     NewWoxSettingValue(store, "QueryHistories", []QueryHistory{}),
 		QueryCompletionFeedbacks:           NewWoxSettingValue(store, "QueryCompletionFeedback", []QueryCompletionFeedback{}),
 		PinedResults:                       NewWoxSettingValue(store, "PinedResults", util.NewHashMap[ResultHash, bool]()),
 		ActionedResults:                    NewWoxSettingValue(store, "ActionedResults", util.NewHashMap[ResultHash, []ActionedResult]()),
-		EnableAnonymousUsageStats:          NewWoxSettingValue(store, "EnableAnonymousUsageStats", true),
+		EnableAnonymousUsageStats:          NewWoxSettingValue(store, "EnableAnonymousUsageStats", false),
 		IgnoredDoctorChecks:                NewWoxSettingValue(store, "IgnoredDoctorChecks", []string{}),
 	}
 }

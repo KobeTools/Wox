@@ -51,6 +51,9 @@ func (s *Store) getStoreManifests(ctx context.Context) []storeManifest {
 }
 
 func (s *Store) Start(ctx context.Context) {
+	if util.ForkDisableStores {
+		return
+	}
 	s.RefreshThemeManifests(ctx)
 
 	util.Go(ctx, "load store themes", func() {

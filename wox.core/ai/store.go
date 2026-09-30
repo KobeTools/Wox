@@ -71,6 +71,9 @@ func GetStoreManager() *Store {
 }
 
 func (s *Store) Start(ctx context.Context) {
+	if util.ForkDisableStores {
+		return
+	}
 	s.commands = s.GetStoreAICommandManifests(ctx)
 
 	util.Go(ctx, "load ai command templates", func() {

@@ -31,6 +31,8 @@ const (
 
 var currentUpdateInfo = UpdateInfo{Status: UpdateStatusNone} // global variable to store update info
 
+var errUpdatesDisabled = errors.New("updates are disabled in this build; rebuild from source to update")
+
 const stableVersionManifestUrl = "https://raw.githubusercontent.com/Wox-launcher/Wox/master/updater.json"
 const betaVersionManifestUrl = "https://raw.githubusercontent.com/Wox-launcher/Wox/master/updater.beta.json"
 
@@ -231,6 +233,9 @@ func removeBackupFile(path string) error {
 
 // StartAutoUpdateChecker starts a background task that periodically checks for updates
 func StartAutoUpdateChecker(ctx context.Context) {
+	if util.ForkDisableUpdates {
+		return
+	}
 	util.Go(ctx, "auto-update-checker", func() {
 		newCtx := util.NewTraceContext()
 		CheckForUpdatesWithCallback(newCtx, nil)
@@ -464,6 +469,9 @@ func GetUpdateChannelVersions(ctx context.Context) []UpdateChannelVersion {
 }
 
 func getLatestVersion(ctx context.Context, releaseChannel setting.ReleaseChannel) (VersionManifest, error) {
+	if util.ForkDisableUpdates {
+		return VersionManifest{}, errUpdatesDisabled
+	}
 	manifestCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	body, err := util.HttpGet(manifestCtx, manifestURLForReleaseChannel(releaseChannel))
@@ -484,6 +492,9 @@ func GetUpdateInfo() UpdateInfo {
 }
 
 func downloadUpdate(ctx context.Context, callback UpdateInfoCallback) {
+	if util.ForkDisableUpdates {
+		return
+	}
 	if currentUpdateInfo.DownloadUrl == "" {
 		util.GetLogger().Error(ctx, "no download URL provided")
 		return
@@ -576,6 +587,9 @@ func downloadUpdate(ctx context.Context, callback UpdateInfoCallback) {
 // ApplyUpdate applies the downloaded update
 // This should be called when the user confirms they want to update
 func ApplyUpdate(ctx context.Context, progress ApplyUpdateProgressCallback) error {
+	if util.ForkDisableUpdates {
+		return errUpdatesDisabled
+	}
 	util.GetLogger().Info(ctx, "start applying update")
 
 	if currentUpdateInfo.Status != UpdateStatusReady || currentUpdateInfo.DownloadedPath == "" {

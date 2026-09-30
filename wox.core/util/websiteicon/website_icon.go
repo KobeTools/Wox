@@ -35,6 +35,10 @@ func Fetch(ctx context.Context, websiteUrl string) (common.WoxImage, error) {
 		}, nil
 	}
 
+	if util.ForkDisableRemoteFavicons {
+		return icons.Get(icons.PluginWebsearch), fmt.Errorf("remote favicons are disabled in this build: %s", websiteUrl)
+	}
+
 	// 1) Try Google favicon service first (usually returns PNG)
 	domain := parseUrl.Hostname()
 	googleFaviconUrl := fmt.Sprintf("https://www.google.com/s2/favicons?sz=96&domain_url=%s", url.QueryEscape(domain))

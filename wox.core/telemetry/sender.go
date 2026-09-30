@@ -51,6 +51,9 @@ type PresenceData struct {
 }
 
 func SendPresenceIfNeeded(ctx context.Context) {
+	if util.ForkDisableTelemetry {
+		return
+	}
 	woxSetting := setting.GetSettingManager().GetWoxSetting(ctx)
 
 	// Check if anonymous usage stats is enabled
@@ -143,6 +146,9 @@ func getOSFamily() string {
 // StartPeriodicHeartbeat starts a background goroutine that sends telemetry
 // presence every 24 hours for long-running Wox processes.
 func StartPeriodicHeartbeat(ctx context.Context) {
+	if util.ForkDisableTelemetry {
+		return
+	}
 	util.Go(ctx, "telemetry heartbeat", func() {
 		ticker := time.NewTicker(time.Duration(heartbeatIntervalHours) * time.Hour)
 		defer ticker.Stop()

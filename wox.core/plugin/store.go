@@ -167,6 +167,9 @@ func (s *Store) getStoreManifests(ctx context.Context) []storeManifest {
 
 // get plugin manifests from plugin stores, and update in the background every 10 minutes
 func (s *Store) Start(ctx context.Context) {
+	if util.ForkDisableStores {
+		return
+	}
 	s.setPluginManifests(ctx, s.GetStorePluginManifests(ctx))
 
 	util.Go(ctx, "load store plugins immediately", func() {

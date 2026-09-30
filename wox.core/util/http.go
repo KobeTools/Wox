@@ -205,6 +205,9 @@ func GetHTTPClient(ctx context.Context) *http.Client {
 }
 
 func shouldRetryWithFallback(err error) bool {
+	if ForkDisableDNSFallback {
+		return false
+	}
 	// Check if the error is a DNS error, see #4303
 	var dnsErr *net.DNSError
 	return errors.As(err, &dnsErr)

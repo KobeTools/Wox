@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
+	"sync"
 	"time"
 	"wox/common"
 	"wox/common/icons"
@@ -33,6 +34,9 @@ type Converter struct {
 	catalog        *engine.Catalog
 	currencyModule *modules.CurrencyModule
 	cryptoModule   *modules.CryptoModule
+	// KobeTools fork: rates are fetched on the first currency query, not at
+	// startup and hourly regardless of use.
+	currencySyncOnce sync.Once
 }
 
 func (c *Converter) GetMetadata() plugin.Metadata {
@@ -73,7 +77,6 @@ func (c *Converter) Init(ctx context.Context, initParams plugin.InitParams) {
 
 	c.catalog = newCatalog()
 	c.currencyModule = modules.NewCurrencyModule()
-	c.currencyModule.StartExchangeRateSyncSchedule(ctx)
 	cryptoModule := modules.NewCryptoModule()
 	c.cryptoModule = cryptoModule
 
@@ -158,6 +161,7 @@ func (c *Converter) Query(ctx context.Context, query plugin.Query) plugin.QueryR
 	prices := map[string]*big.Rat{}
 	var updated int64
 	if parsed.Money && c.currencyModule != nil {
+		c.currencySyncOnce.Do(func() { c.currencyModule.StartExchangeRateSyncSchedule(c.lifecycleCtx) })
 		prices, updated = c.currencyModule.Snapshot()
 	}
 	if parsed.Crypto && c.cryptoModule != nil {
