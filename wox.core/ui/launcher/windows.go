@@ -40,6 +40,10 @@ func (a *App) ensureSettingsWindow() (*woxui.ManagedWindow, error) {
 				if a.hotkeyRecordingUsesSettingsWindow() && a.onSettingsWindowKey(event) {
 					return true
 				}
+				// KobeTools fork: the command palette shortcut must work from any focused control.
+				if a.onSettingsPaletteKey(event) {
+					return true
+				}
 				if host.Key(event) {
 					return true
 				}
@@ -371,6 +375,10 @@ func (a *App) onSettingsWindowKey(event woxui.KeyEvent) bool {
 }
 
 func (a *App) onSettingsWindowTextInput(event woxui.TextInputEvent) {
+	// KobeTools fork: text the palette field did not take must not edit fields behind the palette.
+	if a.settingsCommandPalette.Open() {
+		return
+	}
 	if a.formTableUsesSettingsWindow() && a.onFormTableTextInput(event) {
 		return
 	}
@@ -436,6 +444,7 @@ func (a *App) onSettingsWindowClosed() {
 	a.generalSettings.EndEdit()
 	a.settingsSearch.ReleaseWindowMemory()
 	a.clearSettingsSearchHighlight()
+	a.settingsCommandPalette.hide() // KobeTools fork
 	a.pluginSettings.ReleaseWindowMemory()
 	a.themeSettings.SetThemeSearchEditor(nil)
 	a.themeSettings.SetThemeSearchFocused(false)

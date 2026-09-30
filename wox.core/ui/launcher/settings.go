@@ -716,6 +716,11 @@ func (a *App) closeSettings() error {
 }
 
 func (a *App) onSettingsKey(event woxui.KeyEvent) bool {
+	// KobeTools fork: the command palette is modal. Keys it leaves to its field (text, Space)
+	// must not reach the settings page behind it.
+	if a.settingsCommandPalette.Open() {
+		return false
+	}
 	if a.onPrivacySettingsKey(event) {
 		return true
 	}

@@ -625,6 +625,8 @@
   "ui_setting_search_type_setting": "Setting",
   "ui_setting_search_type_plugin": "Plugin",
   "ui_setting_search_type_plugin_setting": "Plugin setting",
+  "ui_setting_palette_placeholder": "Search settings, sections, and plugins",
+  "ui_setting_palette_footer": "↑↓ to navigate  ·  Enter to open  ·  Esc to close",
   "ui_plugin_author": "Author",
   "ui_plugin_runtime": "Runtime",
   "ui_plugin_website": "Website",

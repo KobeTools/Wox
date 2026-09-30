@@ -293,6 +293,9 @@ type App struct {
 	// queryFocusNotifiedInActiveWindow prevents the initial native activation
 	// from duplicating the query-focus notification already sent while laying out.
 	queryFocusNotifiedInActiveWindow bool
+
+	// KobeTools fork: ⌘K / Ctrl+K settings command palette (settings_palette.go).
+	settingsCommandPalette settingsCommandPaletteState
 }
 
 // New creates a launcher whose typed core services are supplied by the process composition root.

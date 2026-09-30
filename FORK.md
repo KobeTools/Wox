@@ -18,6 +18,7 @@ calls. Re-check every item below after each upstream sync.
 | Typing a URL ranks "Open in browser" first (upstream scored it 100, below bookmarks whose URLs merely contain the text) | `plugin/system/url.go` |
 | "Date & time" glance item (upstream shows one glance at a time: Time or Date) | `plugin/system/glance/glance.go`, `resource/lang/en_US.json` |
 | Settings search also matches dropdown options, and names the matched option ("Date & time" → Primary glance · Date & time) | `ui/launcher/settings_search.go` |
+| ⌘K / Ctrl+K command palette in Settings: centered search over a dimmed backdrop, same ranking as the sidebar search | `ui/launcher/settings_palette.go`, `ui/launcher/view/settings_palette_view.go` (+ small hooks in `app.go`, `windows.go`, `settings.go`, `settings_adapter.go`) |
 | Defaults: auto-update off, usage stats off, AI `bash` tool disabled, Windows main hotkey `ctrl+space` (upstream `alt+space`; Caps+Space via kanata, and Alt+Space stays free for dictation) | `setting/wox_setting.go` |
 | Plugin hosts listen on 127.0.0.1 only and reject browser connections (upstream: all interfaces, no auth) | `wox.plugin.host.python/src/wox_plugin_host/host.py`, `wox.plugin.host.nodejs/src/index.ts` |
 | Python host zipapp built from `uv.lock` with `--require-hashes` (upstream: shiv ran pip against PyPI, unpinned); `ruff format` no longer part of the build | `wox.plugin.host.python/Makefile` |

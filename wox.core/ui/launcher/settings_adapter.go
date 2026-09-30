@@ -84,6 +84,10 @@ func (a *App) buildSettings(frame woxui.FrameInfo) woxwidget.Widget {
 		}}
 		overlayLeft, overlayTop = 0, 0
 	}
+	// KobeTools fork: the ⌘K / Ctrl+K palette; it never stacks on another settings dialog.
+	if overlay == nil && a.settingsCommandPalette.Open() {
+		overlay = a.buildSettingsPaletteOverlay(snapshot, width, height, frame.Scale)
+	}
 	if snapshot.tooltip != nil {
 		tooltip, left, top := launcherview.SettingsInlineTooltipOverlay(launcherview.SettingsInlineTooltipProps{
 			Width: width, Height: height, Anchor: snapshot.tooltip.Anchor, Message: snapshot.tooltip.Text, Side: snapshot.tooltip.Side, Theme: snapshot.palette,
@@ -229,6 +233,8 @@ func (a *App) activeSettingsNavLabel(snapshot settingsSnapshot) string {
 // buildSettingsSearchBox owns the settings window's default text-input focus and native IME cursor.
 func (a *App) buildSettingsSearchBox(snapshot settingsSnapshot, width, imageScale float32) woxwidget.Widget {
 	placeholder := a.translate("i18n:ui_setting_search_placeholder")
+	// KobeTools fork: advertise the command palette shortcut in the rail search hint.
+	placeholder += "  " + settingsPaletteShortcutLabel()
 	iconTint := snapshot.palette.TextSecondary
 	return launcherview.SettingsSearchBox(launcherview.SettingsSearchBoxProps{
 		Width: width, Placeholder: placeholder, State: snapshot.search.Query, Focused: snapshot.search.Focused, Controller: a.settingsSearch.Editor(),
