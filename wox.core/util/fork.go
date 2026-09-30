@@ -34,8 +34,10 @@ const (
 //
 //	lyft              any host with "lyft" as a label: lyft.com, x.lyft.net, lyft.atlassian.net
 //	corp.example.com  that domain and its subdomains
+//	!lyft.com         exception: this public site (and www.) keeps normal icons
 //
-// WOX_PRIVATE_DOMAINS (comma-separated) is read too.
+// WOX_PRIVATE_DOMAINS (comma-separated) is read too. No file and no variable
+// means nothing is treated as private.
 const PrivateDomainsFileName = "private-domains.txt"
 
 var privateDomains struct {
@@ -55,8 +57,16 @@ func matchesPrivateDomain(host string, entries []string) bool {
 	if host == "" {
 		return false
 	}
+	for _, entry := range entries {
+		if allowed, ok := strings.CutPrefix(entry, "!"); ok && (host == allowed || host == "www."+allowed) {
+			return false
+		}
+	}
 	labels := strings.Split(host, ".")
 	for _, entry := range entries {
+		if strings.HasPrefix(entry, "!") {
+			continue
+		}
 		if strings.Contains(entry, ".") {
 			if host == entry || strings.HasSuffix(host, "."+entry) {
 				return true
@@ -100,7 +110,12 @@ func parsePrivateDomains(text, sep string) []string {
 		if i := strings.Index(line, "#"); i >= 0 {
 			line = line[:i]
 		}
-		if entry := strings.ToLower(strings.Trim(strings.TrimSpace(line), ".")); entry != "" {
+		line = strings.TrimSpace(line)
+		allow := strings.HasPrefix(line, "!")
+		if entry := strings.ToLower(strings.Trim(strings.TrimPrefix(line, "!"), ". ")); entry != "" {
+			if allow {
+				entry = "!" + entry
+			}
 			entries = append(entries, entry)
 		}
 	}

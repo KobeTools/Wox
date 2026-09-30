@@ -3,9 +3,11 @@ package util
 import "testing"
 
 func TestMatchesPrivateDomain(t *testing.T) {
-	entries := parsePrivateDomains("lyft  # work\n\ncorp.example.com\n.Internal.IO.\n", "\n")
+	entries := parsePrivateDomains("lyft  # work\n! Lyft.com\n\ncorp.example.com\n.Internal.IO.\n", "\n")
 	cases := map[string]bool{
-		"lyft.com":              true,
+		"lyft.com":              false, // exception
+		"www.lyft.com":          false, // exception
+		"help.lyft.com":         true,
 		"eng.lyft.net":          true,
 		"lyft.atlassian.net":    true,
 		"mylyfthelper.com":      false,
