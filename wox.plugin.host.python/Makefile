@@ -22,11 +22,11 @@ help:
 	@echo "  make format     - Run formatting"
 
 clean:
-	rm -rf python-host.pyz python-host/
+	rm -rf python-host.pyz python-host/ $(SITE_DIR)
 
 install:
 	uv cache clean
-	uv sync --all-extras
+	uv sync --all-extras --locked
 
 lint:
 	uv run ruff check src
@@ -38,8 +38,17 @@ format:
 test:
 	uv run python -m unittest discover -s tests -v
 
-build: clean install lint format
-	# uv sources keep the development environment on the local SDK, but shiv
-	# resolves its own wheel set; pass the SDK path explicitly so the bundled
-	# host never falls back to the published PyPI SDK.
-	uv run shiv --compressed -c run -o $(HOSTS_DIR)/python-host.pyz . $(SDK_DIR)
+# KobeTools fork: build the zipapp from uv.lock with hash checks. Upstream let
+# shiv run pip against PyPI (unpinned, bypassing uv.lock). Third-party deps are
+# installed --require-hashes from the lock; the host and SDK are pure Python and
+# are copied from source, so no build backend is fetched. `format` is no longer
+# part of the build (it rewrote sources).
+SITE_DIR := .build-site
+
+build: clean install lint
+	rm -rf $(SITE_DIR) && mkdir -p $(SITE_DIR) $(HOSTS_DIR)
+	uv export --frozen --no-dev --no-emit-project --no-emit-package wox-plugin --format requirements-txt -o $(SITE_DIR)/requirements.lock
+	uv pip install --target $(SITE_DIR)/site --require-hashes --no-deps -r $(SITE_DIR)/requirements.lock
+	cp -R src/wox_plugin_host $(SDK_DIR)/src/wox_plugin $(SITE_DIR)/site/
+	uv run shiv --compressed --reproducible --site-packages $(SITE_DIR)/site -e wox_plugin_host.__main__:run -o $(HOSTS_DIR)/python-host.pyz
+	rm -rf $(SITE_DIR)
