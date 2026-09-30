@@ -66,7 +66,9 @@ if [[ "${VERIFY_OFFLINE:-0}" == 1 ]]; then
 fi
 
 # ── Record what was built ──────────────────────────────────────────────────────
-(cd release && { sha256sum ./* 2>/dev/null || shasum -a 256 ./*; } | tee SHA256SUMS)
+# Files only (release/ also holds Wox.app, a folder).
+(cd release && find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z |
+  xargs -0 sh -c 'sha256sum "$@" 2>/dev/null || shasum -a 256 "$@"' _ | tee SHA256SUMS)
 
 # ── Install ────────────────────────────────────────────────────────────────────
 if [[ "$PLATFORM" == windows && "${INSTALL:-1}" == 1 ]]; then
